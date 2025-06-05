@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Time Predictor Online</title>
+    <style>
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-color: #1a1a2e;
+            --card-color: #16213e;
+            --text-color: #f1f1f1;
+            --border-color: #30475e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            grid-column: 1 / -1;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #9b59b6;
+        }
+
+        button.secondary {
+            background-color: var(--secondary-color);
+        }
+
+        button.secondary:hover {
+            background-color: #2980b9;
+        }
+
+        button.danger {
+            background-color: var(--accent-color);
+        }
+
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        select, input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: #2c3e50;
+            color: var(--text-color);
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .results-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .result-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .result-ball:hover {
+            transform: scale(1.1);
+        }
+
+        .ball-1 {
+            background-color: #1abc9c;
+        }
+
+        .ball-2 {
+            background-color: #f1c40f;
+        }
+
+        .ball-5 {
+            background-color: #e74c3c;
+        }
+
+        .ball-10 {
+            background-color: #9b59b6;
+        }
+
+        .ball-C {
+            background-color: #3498db;
+        }
+
+        .ball-P {
+            background-color: #e67e22;
+        }
+
+        .ball-H {
+            background-color: #2ecc71;
+        }
+
+        .ball-CT {
+            background-color: #e84393;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .prediction-container {
+            margin-top: 15px;
+        }
+
+        .prediction-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .prediction-ball {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .prediction-text {
+            flex-grow: 1;
+        }
+
+        .confidence {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .confidence-level {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .probability-value {
+            font-size: 0.9em;
+            color: #ddd;
+            margin-top: 3px;
+        }
+
+        .pattern-indicator {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .pattern-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-online {
+            background-color: #2ecc71;
+        }
+
+        .status-offline {
+            background-color: #e74c3c;
+        }
+
+        .status-updating {
+            background-color: #f1c40f;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .learning-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .learning-item {
+            text-align: center;
+        }
+
+        .learning-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .accuracy-meter {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .accuracy-level {
+            height: 100%;
+            background-color: var(--secondary-color);
+        }
+
+        .auto-update-toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .add-section {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .add-section h3 {
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .all-probabilities {
+            margin-top: 20px;
+        }
+
+        .probability-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .result-indicator {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .result-name {
+            width: 100px;
+        }
+
+        .probability-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .probability-value {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .trend {
+            width: 60px;
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        .trend-up {
+            color: #2ecc71;
+        }
+
+        .trend-down {
+            color: #e74c3c;
+        }
+
+        .trend-neutral {
+            color: #bbb;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Crazy Time Predictor Online</h1>
+            <p>Análise avançada e previsões em tempo real</p>
+        </header>
+
+        <!-- Lado Esquerdo - Estatísticas e Histórico -->
+        <div>
+            <div class="card">
+                <div class="status-indicator">
+                    <div class="status-dot status-online" id="status-dot"></div>
+                    <span id="status-text">Online - Dados Reais</span>
+                </div>
+                
+                <div class="add-section">
+                    <h3>Adicionar Resultado Manualmente</h3>
+                    <p>Clique em uma bola para adicionar o resultado:</p>
+                    <div class="results-container">
+                        <div class="result-ball ball-1" onclick="addResultDirect('1')">1</div>
+                        <div class="result-ball ball-2" onclick="addResultDirect('2')">2</div>
+                        <div class="result-ball ball-5" onclick="addResultDirect('5')">5</div>
+                        <div class="result-ball ball-10" onclick="addResultDirect('10')">10</div>
+                        <div class="result-ball ball-C" onclick="addResultDirect('C')">C</div>
+                        <div class="result-ball ball-P" onclick="addResultDirect('P')">P</div>
+                        <div class="result-ball ball-H" onclick="addResultDirect('H')">H</div>
+                        <div class="result-ball ball-CT" onclick="addResultDirect('CT')">CT</div>
+                    </div>
+                </div>
+
+                <div>
+                    <button onclick="updateFromAPI()" class="secondary">Atualizar via Crazy-Time.cc</button>
+                    <button onclick="clearResults()" class="danger">Limpar Dados</button>
+                </div>
+                
+                <div class="auto-update-toggle">
+                    <span>Atualização automática:</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="auto-update-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="time-info">
+                    <div>Última atualização: <span id="last-update">-</span></div>
+                    <div>Hora atual: <span id="current-time">-</span></div>
+                    <div>Dia: <span id="current-day">-</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Últimas Rodadas</h2>
+                <div class="results-container" id="results-history">
+                    <!-- Histórico de resultados será inserido aqui -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('stats-tab')">Estatísticas</div>
+                    <div class="tab" onclick="showTab('patterns-tab')">Padrões</div>
+                    <div class="tab" onclick="showTab('history-tab')">Histórico c/ Aprendizado</div>
+                </div>
+
+                <div class="tab-content active" id="stats-tab">
+                    <h3>Estatísticas</h3>
+                    <div class="stats-grid" id="stats-grid">
+                        <!-- Estatísticas serão inseridas aqui -->
+                    </div>
+                </div>
+
+                <div class="tab-content" id="patterns-tab">
+                    <h3>Análise de Padrões</h3>
+                    <p>Ciclos de drenagem e entrega identificados:</p>
+                    <div id="patterns-analysis">
+                        <div class="pattern-indicator">
+                            <p>Fase atual do ciclo:</p>
+                            <p class="pattern-name" id="cycle-phase">Carregando...</p>
+                        </div>
+                        <div class="learning-stats">
+                            <div class="learning-item">
+                                <p>Intensidade:</p>
+                                <p class="learning-value" id="pattern-intensity">0%</p>
+                            </div>
+                            <div class="learning-item">
+                                <p>Duração:</p>
+                                <p class="learning-value" id="pattern-duration">0</p>
+                            </div>
+                            <div class="learning-item">
+                                <p>Estabilidade:</p>
+                                <p class="learning-value" id="pattern-stability">0%</p>
+                            </div>
+                        </div>
+                        
+                        <div class="learning-stats">
+                            <div class="learning-item">
+                                <p>Tendência Horária:</p>
+                                <p class="learning-value" id="time-trend">Neutro</p>
+                                <p>Confiança: <span id="time-confidence">0%</span></p>
+                            </div>
+                            <div class="learning-item">
+                                <p>Tendência Diária:</p>
+                                <p class="learning-value" id="day-trend">Neutro</p>
+                                <p>Confiança: <span id="day-confidence">0%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="history-tab">
+                    <h3>Histórico de Aprendizado</h3>
+                    <div class="learning-stats">
+                        <div class="learning-item">
+                            <p>Acertos:</p>
+                            <p class="learning-value" id="correct-predictions">0</p>
+                        </div>
+                        <div class="learning-item">
+                            <p>Erros:</p>
+                            <p class="learning-value" id="wrong-predictions">0</p>
+                        </div>
+                        <div class="learning-item">
+                            <p>Taxa de Acerto:</p>
+                            <p class="learning-value" id="accuracy-rate">0%</p>
+                        </div>
+                    </div>
+                    <div class="accuracy-meter">
+                        <div class="accuracy-level" id="accuracy-level" style="width: 0%;"></div>
+                    </div>
+                    <p style="margin-top: 15px;">Ajuste de aprendizado: <span id="learning-rate">8-10%</span> (Agressivo)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lado Direito - Previsões -->
+        <div>
+            <div class="card">
+                <h2>Previsões</h2>
+                <div class="pattern-indicator">
+                    <p>Padrão Atual:</p>
+                    <p class="pattern-name" id="current-pattern">Carregando...</p>
+                </div>
+
+                <h3>Próximos Resultados Prováveis</h3>
+                <div class="prediction-container" id="predictions">
+                    <!-- Previsões serão inseridas aqui -->
+                </div>
+
+                <h3>Previsão de Especiais</h3>
+                <div class="prediction-container">
+                    <div class="prediction-item">
+                        <div class="prediction-ball ball-CT">CT</div>
+                        <div class="prediction-text">
+                            <p>Crazy Time</p>
+                            <div class="confidence">
+                                <div class="confidence-level" id="ct-confidence" style="width: 20%;"></div>
+                            </div>
+                            <p class="probability-value"><span id="ct-confidence-value">20%</span></p>
+                        </div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="prediction-ball ball-P">P</div>
+                        <div class="prediction-text">
+                            <p>Pachinko</p>
+                            <div class="confidence">
+                                <div class="confidence-level" id="p-confidence" style="width: 15%;"></div>
+                            </div>
+                            <p class="probability-value"><span id="p-confidence-value">15%</span></p>
+                        </div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="prediction-ball ball-H">H</div>
+                        <div class="prediction-text">
+                            <p>Cash Hunt</p>
+                            <div class="confidence">
+                                <div class="confidence-level" id="h-confidence" style="width: 25%;"></div>
+                            </div>
+                            <p class="probability-value"><span id="h-confidence-value">25%</span></p>
+                        </div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="prediction-ball ball-C">C</div>
+                        <div class="prediction-text">
+                            <p>Coin Flip</p>
+                            <div class="confidence">
+                                <div class="confidence-level" id="c-confidence" style="width: 30%;"></div>
+                            </div>
+                            <p class="probability-value"><span id="c-confidence-value">30%</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="all-probabilities">
+                    <h3>Probabilidades de Todos os Resultados</h3>
+                    <div id="all-probabilities">
+                        <!-- Todas as probabilidades serão inseridas aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
