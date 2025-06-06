@@ -792,8 +792,8 @@ function updateFromAPI() {
         statusText.textContent = 'Atualizando dados...';
     }
     
-    apiUrl: '/.netlify/functions/getResults',        
-        .then(response => response.json())
+    fetch('/.netlify/functions/getResults')
+    .then(response => response.json())
         .then(data => {
             if (data.success && data.results && data.results.length > 0) {
                 processAPIResults(data.results);
